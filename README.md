@@ -19,5 +19,5 @@ No curso em questão e no desenvolvimento deste projeto podemos encontrar divers
 -CRUD
 -Armazenamento session Storage e local Storage
 
-Projeto ainda em desenvolvimento, posteriormente pretende-se realizar armazenamentoem banco de dados.
+Projeto ainda em desenvolvimento, posteriormente pretende-se realizar armazenamento em banco de dados.
 
