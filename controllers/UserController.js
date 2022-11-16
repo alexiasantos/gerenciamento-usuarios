@@ -35,21 +35,10 @@ class UserController {
                     } else {
                         result._file = content;
                     }
-
-                    tr.dataset.user = JSON.stringify(result);
-
-                    tr.innerHTML = ` <tr>
-            <td><img src="${result._file}" alt="User Image" class="img-circle img-sm"></td>
-            <td>${result._name}</td>
-            <td>${result._email}</td>
-            <td>${(result._admin) ? 'sim' : 'Não'}</td>
-            <td>${(result._register).toLocaleDateString()}</td>
-            <td>
-              <button type="button" class="btn btn-primary btn-edit btn-xs btn-flat">Editar</button>
-              <button type="button" class="btn btn-danger btn-xs btn-flat">Excluir</button>
-            </td>
-          </tr>`;
-
+                    let user = new User();
+                    user.loadFromJSON(result);
+                    user.save();
+                    this.getTr(user, tr);
                     this.addEventsTr(tr);
                     this.updateCount();
                     this.formUpdateEl.reset();
@@ -75,8 +64,7 @@ class UserController {
             this.getFile(this.formEl).then(
                 (content) => {
                     values.file = content;
-
-                    this.insert(values);
+                    values.save();
                     this.addLine(values);
                     this.formEl.reset(); //limpar o formulario quando o botão submit e clicado
                     btn.disabled = false;//botão é reativado, quando o carregamento foi fnalizado 
@@ -160,36 +148,28 @@ class UserController {
 
     }//getValues
 
-    getUsersStorage() {
-        let users = [];
-        if (localStorage.getItem("users")) {
-            users = JSON.parse(localStorage.getItem("users"))
-        }
-        return users;
-    }
-
     selectAll() {
-        let users = this.getUsersStorage();
+        let users = User.getUsersStorage();
         users.forEach(dataUser => {
             let user = new User();
             user.loadFromJSON(dataUser);
             this.addLine(user);
         });
 
-    }
-
-    insert(data) {
-        let users = this.getUsersStorage();
-        users.push(data);
-        localStorage.setItem("users", JSON.stringify(users));
-    }//insert 
+    }//carrega informações do local storage na tela
 
     addLine(dataUser) {
-        // utilizando a crase, nos temos o template String
-        let tr = document.createElement('tr');
-        //dataset utilizado para leitura de elementos, permite colocar atributos em qualquer tipo de elemento inclusive os HTML com data-* e depois uma posterior recuperação em JSon
 
-        tr.dataset.user = JSON.stringify(dataUser);// JASON utilizado para deserializar o objeto e transformar em string
+        let tr = this.getTr(dataUser);
+        this.tableEl.appendChild(tr);//criando elementos na list que aparece na view
+        this.updateCount();
+
+    }//adiciona linhasna tabela
+
+    getTr(dataUser, tr = null) {
+
+        if (tr === null) tr = document.createElement('tr');
+        tr.dataset.user = JSON.stringify(dataUser);// JSON utilizado para deserializar o objeto e transformar em string
         tr.innerHTML = ` <tr>
         <td><img src="${dataUser.file}" alt="User Image" class="img-circle img-sm"></td>
         <td>${dataUser.name}</td>
@@ -203,15 +183,18 @@ class UserController {
       </tr>`;
 
         this.addEventsTr(tr);
-        this.tableEl.appendChild(tr);//criando elementos na list que aparece na view
-        this.updateCount();
+        return tr;
 
-    }//addLine
+    }// selecona a tr que sera gerada
 
     addEventsTr(tr) {
 
         tr.querySelector(".btn-delete").addEventListener("click", e => {
             if (confirm("Deseja realmente excluir")) {
+
+                let user = new User();
+                user.loadFromJSON(JSON.parse(tr.dataset.user))
+                user.remove();
                 tr.remove();
                 this.updateCount();
             }
@@ -249,7 +232,7 @@ class UserController {
         });
 
 
-    }//event
+    }//eventos dos botoes deletar e alterar 
 
     showPanelCreate() {
         document.querySelector("#box-user-create").style.display = "block"
