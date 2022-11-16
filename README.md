@@ -2,6 +2,7 @@
 
 Este projeto tem como objetivo auxiliar no treinamento das Habilidades na tecnologia JavaScript .
 Portanto inicialmente, não foi feito nenhum armazenamento em banco de dados e o CSS já estava pronto para ser utilizado. Projeto realizado com auxílio dos cursos da equipe Hcode na Udemy
+Consiste na realização do cadastro, delete, leitura e alteração de usuários (gerenciamento)
 
 No curso em questão e no desenvolvimento deste projeto podemos encontrar diversos conceitos como:
 
